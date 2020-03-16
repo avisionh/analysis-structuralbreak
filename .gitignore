@@ -1,0 +1,8 @@
+# environments
+venv/
+
+# ide
+.idea/
+
+# display files
+*.DS_Store
