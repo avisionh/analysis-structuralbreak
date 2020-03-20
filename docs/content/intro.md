@@ -1,7 +1,13 @@
-# Books with Jupyter and Jekyll
+# Introduction
 
-<img src="https://circleci.com/gh/jupyter/jupyter-book.svg?style=svg" class="left">
+Welcome to the start of your journey into analysing time-series data within Python.
 
+The focus of this book is to enable you to get started as soon as possible with analysing,
+modelling and forecasting time-series data.
+
+***
+
+## The Platform: Jupyter Book
 Jupyter Book lets you build an online book using a collection of Jupyter Notebooks
 and Markdown files. Its output is similar to the excellent [Bookdown](https://bookdown.org/yihui/bookdown/) tool,
 and adds extra functionality for people running a Jupyter stack.
@@ -17,7 +23,7 @@ Here are a few features of Jupyter Book
 * There are lots of nifty HTML features under-the-hood, such as Turbolinks fast-navigation and
   click-to-copy in code cells.
 
-## Getting started
+### Getting started
 
 To get started, you may be interested in the following links.
 Here are a few links of interest:
@@ -32,7 +38,7 @@ Here are a few links of interest:
 
 * **A demo of the Jupyter Book** can be browsed via the sidebar to the left.
 
-## Installation
+### Installation
 
 Here's a brief rundown of how to create your own Jupyter Book using this site. For a more
 complete guide, see [the Jupyter Book guide](guide/01_overview).
@@ -43,7 +49,16 @@ complete guide, see [the Jupyter Book guide](guide/01_overview).
 * Generate the Jekyll markdown for your notebooks by running `scripts/generate_book.py`
 * Push your changes to GitHub (or wherever you host your site)!
 
+***
+
 ## Acknowledgements
+Before we proceed further, enormous debt is owed to Rob Hyndman's and Georg Athanasopoulos'
+excellent ebook [Forecasting: Principles and Practice](https://otexts.com/fpp2/) for which
+this book owes plenty to.
+
+Also, a huge thanks to [Alessia Tosi][atosi] for her expert judgement and guidance throughout.
+
+[atosi]: https://github.com/exfalsoquodlibet
 
 Jupyter Book was originally created by [Sam Lau][sam] and [Chris Holdgraf][chris]
 with support of the **UC Berkeley Data Science Education Program and the Berkeley
