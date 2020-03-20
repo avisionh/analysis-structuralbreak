@@ -52,7 +52,7 @@ complete guide, see [the Jupyter Book guide](guide/01_overview).
 ***
 
 ## Acknowledgements
-Before we proceed further, enormous debt is owed to Rob Hyndman's and Georg Athanasopoulos'
+Before we proceed further, enormous debt is owed to Rob Hyndman's and George Athanasopoulos'
 excellent ebook [Forecasting: Principles and Practice](https://otexts.com/fpp2/) for which
 this book owes plenty to.
 
