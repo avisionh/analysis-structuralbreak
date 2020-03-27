@@ -15,3 +15,6 @@ venv/
 
 # data
 *hotel_bookings.csv.zip
+
+# Ignore the `.secrets` file
+.secrets
