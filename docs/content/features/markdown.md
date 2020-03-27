@@ -12,7 +12,7 @@ that Jekyll can parse it
 
 ## Sidebars with Jekyll
 
-You may notice that there's a sidebar to the right (if your screen is wide enough).
+You may notice that there's a sidebar to the right (if your screen is wide en  ough).
 These are automatically generated from the headers that are present in your page.
 The sidebar will automatically capture all 2nd and 3rd level section headers.
 The best way to designate these headers is with `#` characters at the beginning
