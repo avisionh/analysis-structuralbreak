@@ -44,13 +44,15 @@
 
 # A chapter w/ a collection of sections beneath it
 - title: Data
-  url: /features/01_data
+  url: /features/01_00_data
   not_numbered: true
   expand_sections: true
   sections:
   - title: Data Wrangling
-    url: /features/02_datawrangle
+    url: /features/01_01_datawrangle
     not_numbered: true
-  - title: Markdown files
-    url: /features/markdown
-    not_numbered: true
+- title: Exploratory Data Analysis
+  url: /features/02_00_explore
+  not_numbered: true
+  expand_sections: true
+  sections:
