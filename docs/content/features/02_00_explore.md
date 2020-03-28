@@ -1,29 +1,18 @@
-# Creating book content
+# Exploratory Data Analysis
 
-The two kinds of files that contain course content are:
+For this section, we will begin exploring our transformed dataset. The approach here is to get a feel for, understand and pick out key trends and points in our data, such as *outlier* observations which we would like to remove later when modelling our time-series data.
 
-* Jupyter Notebooks
-* Markdown files
+Moreover, we would like to find candidate *break-points* which we can test for a **structural break** at.
 
-Each are contained in the `content/` folder and referenced from `_data/toc.yml`.
+Thus, we want to do as the wise Bruce Lee suggests...
 
-If the file is markdown, it will be copied over with front-matter YAML added so
-that Jekyll can parse it
+<center><img src="https://media.giphy.com/media/9WHE2bo5Na9Gg/giphy.gif"></center>
 
-## Sidebars with Jekyll
+***
 
-You may notice that there's a sidebar to the right (if your screen is wide en  ough).
-These are automatically generated from the headers that are present in your page.
-The sidebar will automatically capture all 2nd and 3rd level section headers.
-The best way to designate these headers is with `#` characters at the beginning
-of a line.
+## ACF and PACF plots
 
-### Here's a third-level header
-
-This section is here purely to demonstrate the third-level header of the
-rendered page!
-
-## Embedding media
+Once we have explored our data
 
 ### Adding images
 
@@ -39,6 +28,6 @@ Here's an image relative to the site root
 
 You can even embed references to movies on the web! For example, here's a little gif for you!
 
-![](https://media.giphy.com/media/yoJC2A59OCZHs1LXvW/giphy.gif)
+
 
 This will be included in your website when it is built.
