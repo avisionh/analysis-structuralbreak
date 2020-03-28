@@ -56,3 +56,9 @@
   not_numbered: true
   expand_sections: true
   sections:
+  - title: Identify Break Point
+      url: /features/02_01_identifybreak
+      not_numbered: true
+  - title: ACFs, PACFs and STL Decompositions
+      url: /features/02_02_stl
+      not_numbered: true
