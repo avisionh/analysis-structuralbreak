@@ -16,6 +16,7 @@
 
 #######################################################################################
 # Jekyll site settings
+
 title: Time-Series Analysis
 author: Avision Ho
 email: a_vision@hotmail.co.uk
@@ -24,6 +25,7 @@ description: >-
 
 baseurl: /  # the subpath of your site, e.g. /blog. If there is no subpath for your site, use an empty string ""
 url: https://avisionh.github.io/Training-TimeSeries/intro.html
+
 exclude: ['README.md', 'Gemfile.lock', 'Gemfile']
 
 #######################################################################################

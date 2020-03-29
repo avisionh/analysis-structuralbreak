@@ -8,6 +8,7 @@ modelling and forecasting time-series data.
 ***
 
 ## The Platform: Jupyter Book
+
 Jupyter Book lets you build an online book using a collection of Jupyter Notebooks
 and Markdown files. Its output is similar to the excellent [Bookdown](https://bookdown.org/yihui/bookdown/) tool,
 and adds extra functionality for people running a Jupyter stack.

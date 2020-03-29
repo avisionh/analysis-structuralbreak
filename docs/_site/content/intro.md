@@ -8,6 +8,7 @@ modelling and forecasting time-series data.
 ***
 
 ## The Platform: Jupyter Book
+
 Jupyter Book lets you build an online book using a collection of Jupyter Notebooks
 and Markdown files. Its output is similar to the excellent [Bookdown](https://bookdown.org/yihui/bookdown/) tool,
 and adds extra functionality for people running a Jupyter stack.
@@ -22,6 +23,7 @@ Here are a few features of Jupyter Book
 * The website itself is based on Jekyll, and is highly extensible and can be freely-hosted on GitHub.
 * There are lots of nifty HTML features under-the-hood, such as Turbolinks fast-navigation and
   click-to-copy in code cells.
+
 
 ### Getting started
 
