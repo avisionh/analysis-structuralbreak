@@ -57,11 +57,11 @@
   expand_sections: true
   sections:
   - title: Time
-      url: /features/02_01_time
-      not_numbered: true
+    url: /features/02_01_time
+    not_numbered: true
   - title: ACFs and PACFs
-      url: /features/02_02_acfpacf
-      not_numbered: true
+    url: /features/02_02_acfpacf
+    not_numbered: true
   - title: STL Decomposition
-      url: /features/02_03_stl
-      not_numbered: true
+    url: /features/02_03_stl
+    not_numbered: true
