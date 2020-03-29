@@ -28,7 +28,7 @@
 
 # External link
 - title: GitHub repository
-  url: https://github.com/jupyter/jupyter-book
+  url: https://github.com/avisionh/Training-TimeSeries
   external: true
   not_numbered: true
 
@@ -40,17 +40,28 @@
 - divider: true
 
 # Add a header and sample content section
-- header: Demo textbook
+- header: Analysis
 
 # A chapter w/ a collection of sections beneath it
-- title: Features and customization
-  url: /features/features
+- title: Data
+  url: /features/01_00_data
   not_numbered: true
   expand_sections: true
   sections:
-  - title: Markdown files
-    url: /features/markdown
+  - title: Data Wrangling
+    url: /features/01_01_datawrangle
     not_numbered: true
-  - title: Jupyter notebooks
-    url: /features/notebooks
+- title: Exploratory Data Analysis
+  url: /features/02_00_explore
+  not_numbered: true
+  expand_sections: true
+  sections:
+  - title: Time
+    url: /features/02_01_time
+    not_numbered: true
+  - title: ACFs and PACFs
+    url: /features/02_02_acfpacf
+    not_numbered: true
+  - title: STL Decomposition
+    url: /features/02_03_stl
     not_numbered: true

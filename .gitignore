@@ -6,3 +6,15 @@ venv/
 
 # display files
 *.DS_Store
+
+# compilation
+*.sass-cache
+
+# notebook checkpoints
+*.ipynb_checkpoints
+
+# data
+*hotel_bookings.csv.zip
+
+# Ignore the `.secrets` file
+.secrets
