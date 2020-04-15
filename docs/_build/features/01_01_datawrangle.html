@@ -1,0 +1,1182 @@
+---
+redirect_from:
+  - "/features/01-01-datawrangle"
+interact_link: content/features/01_01_datawrangle.ipynb
+kernel_name: venv
+kernel_path: content/features
+has_widgets: false
+title: |-
+  Data Wrangling
+pagenum: 2
+prev_page:
+  url: /features/01_00_data.html
+next_page:
+  url: /features/01_02_datatransform.html
+suffix: .ipynb
+search: our region data x proportions country guests categories modelling series computing compute compositional break dataset total date column arrivaldate bookings bring lookup information codes narrow need suitable analysing numberguests done columns month arrivaldatemonth create because transform analyse github points lets check dates any candidate want search mapping list into smaller proportion totalguests analysis section wrangle chief changes adding adults children babies convert name given concatenating arrivaldateyear arrivadatedayofmonth filtering cancelled not fulfilled narrowing become appropriate also subregions world reduce here com lukes iso countries regional tree master searching possibles online pose point before structural particular range news global shocks impacted hotel
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">Data Wrangling</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In this section, we will wrangle our dataset so that it is suitable for modelling and analysing as a time-series.</p>
+<p>The chief changes we will make are:</p>
+<ul>
+<li>[x] Computing total number of guests, <code>number_guests</code>.<ul>
+<li>This is done by adding the columns <code>adults</code>, <code>children</code> and <code>babies</code>.</li>
+</ul>
+</li>
+<li>[x] Convert the month name given to a month number, <code>arrival_date_month</code>.<ul>
+<li>This is so we can create a date column.</li>
+</ul>
+</li>
+<li>[x] Create a date column, <code>arrival_date</code>.<ul>
+<li>This is done by concatenating the columns <code>arrival_date_year</code>, <code>arrival_date_month</code> and <code>arriva_date_day_of_month</code>.</li>
+</ul>
+</li>
+<li>[x] Filtering out cancelled bookings because these bookings were not fulfilled.</li>
+<li>[x] Narrowing down categories to compute proportions by, <code>country</code> -&gt; <code>region</code>.</li>
+<li>[x] Transform data to become compositional by computing proportions. </li>
+<li>[x] Transform data so our data is appropriate for modelling.</li>
+</ul>
+<p>We will also bring in lookup information country codes to their subregions of the world. This is so we can reduce the number of categories to analyse by.</p>
+<p>The data that has the lookup information country codes is on GitHub <a href="https://github.com/lukes/ISO-3166-Countries-with-Regional-Codes/tree/master/all">here</a>.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell tag_hide_input">
+
+<div class="cell border-box-sizing code_cell rendered tag_hide_input">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># display multiple outputs in same cell</span>
+<span class="kn">from</span> <span class="nn">IPython.core.interactiveshell</span> <span class="kn">import</span> <span class="n">InteractiveShell</span>
+<span class="n">InteractiveShell</span><span class="o">.</span><span class="n">ast_node_interactivity</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell tag_hide_output">
+
+<div class="cell border-box-sizing code_cell rendered tag_hide_output">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># pass in variable from other notebook</span>
+<span class="o">%</span><span class="k">store</span> -r data_hotel
+
+<span class="c1"># load in lookup .csv file</span>
+<span class="n">data_lookup</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filepath_or_buffer</span> <span class="o">=</span> <span class="s1">&#39;../../_data/data_lookup.csv&#39;</span><span class="p">)</span>
+
+<span class="c1"># compute &#39;number_guests&#39;</span>
+<span class="n">data_hotel</span><span class="p">[</span><span class="s1">&#39;number_guests&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_hotel</span><span class="p">[</span><span class="s1">&#39;adults&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">data_hotel</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">data_hotel</span><span class="p">[</span><span class="s1">&#39;babies&#39;</span><span class="p">]</span>
+<span class="c1"># convert month name to month number</span>
+<span class="n">data_hotel</span><span class="p">[</span><span class="s1">&#39;arrival_date_month&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">data_hotel</span><span class="p">[</span><span class="s1">&#39;arrival_date_month&#39;</span><span class="p">],</span> <span class="nb">format</span> <span class="o">=</span> <span class="s1">&#39;%B&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span>
+<span class="c1"># create date column</span>
+<span class="n">data_hotel</span><span class="p">[</span><span class="s1">&#39;arrival_date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_hotel</span><span class="p">[</span><span class="s1">&#39;arrival_date_year&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">data_hotel</span><span class="p">[</span><span class="s1">&#39;arrival_date_month&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">data_hotel</span><span class="p">[</span><span class="s1">&#39;arrival_date_day_of_month&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">data_hotel</span><span class="p">[</span><span class="s1">&#39;arrival_date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">data_hotel</span><span class="p">[</span><span class="s1">&#39;arrival_date&#39;</span><span class="p">])</span>
+<span class="c1"># filter out cancelled bookings</span>
+<span class="n">data_hotel</span> <span class="o">=</span> <span class="n">data_hotel</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;is_canceled == 0&#39;</span><span class="p">)</span>
+<span class="c1"># select only columns necessary</span>
+<span class="n">data_hotel</span> <span class="o">=</span> <span class="n">data_hotel</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,[</span><span class="s1">&#39;hotel&#39;</span><span class="p">,</span> <span class="s1">&#39;arrival_date&#39;</span><span class="p">,</span> 
+                               <span class="s1">&#39;number_guests&#39;</span><span class="p">,</span> <span class="s1">&#39;country&#39;</span><span class="p">,</span> <span class="s1">&#39;adr&#39;</span><span class="p">]]</span>
+
+<span class="c1"># look at two datasets</span>
+<span class="n">data_hotel</span>
+<span class="n">data_lookup</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>hotel</th>
+      <th>arrival_date</th>
+      <th>number_guests</th>
+      <th>country</th>
+      <th>adr</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Resort Hotel</td>
+      <td>2015-07-01</td>
+      <td>2.0</td>
+      <td>PRT</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Resort Hotel</td>
+      <td>2015-07-01</td>
+      <td>2.0</td>
+      <td>PRT</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Resort Hotel</td>
+      <td>2015-07-01</td>
+      <td>1.0</td>
+      <td>GBR</td>
+      <td>75.00</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Resort Hotel</td>
+      <td>2015-07-01</td>
+      <td>1.0</td>
+      <td>GBR</td>
+      <td>75.00</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Resort Hotel</td>
+      <td>2015-07-01</td>
+      <td>2.0</td>
+      <td>GBR</td>
+      <td>98.00</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>119385</th>
+      <td>City Hotel</td>
+      <td>2017-08-30</td>
+      <td>2.0</td>
+      <td>BEL</td>
+      <td>96.14</td>
+    </tr>
+    <tr>
+      <th>119386</th>
+      <td>City Hotel</td>
+      <td>2017-08-31</td>
+      <td>3.0</td>
+      <td>FRA</td>
+      <td>225.43</td>
+    </tr>
+    <tr>
+      <th>119387</th>
+      <td>City Hotel</td>
+      <td>2017-08-31</td>
+      <td>2.0</td>
+      <td>DEU</td>
+      <td>157.71</td>
+    </tr>
+    <tr>
+      <th>119388</th>
+      <td>City Hotel</td>
+      <td>2017-08-31</td>
+      <td>2.0</td>
+      <td>GBR</td>
+      <td>104.40</td>
+    </tr>
+    <tr>
+      <th>119389</th>
+      <td>City Hotel</td>
+      <td>2017-08-29</td>
+      <td>2.0</td>
+      <td>DEU</td>
+      <td>151.20</td>
+    </tr>
+  </tbody>
+</table>
+<p>75166 rows × 5 columns</p>
+</div>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>alpha-2</th>
+      <th>alpha-3</th>
+      <th>country-code</th>
+      <th>iso_3166-2</th>
+      <th>region</th>
+      <th>sub-region</th>
+      <th>intermediate-region</th>
+      <th>region-code</th>
+      <th>sub-region-code</th>
+      <th>intermediate-region-code</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Afghanistan</td>
+      <td>AF</td>
+      <td>AFG</td>
+      <td>4</td>
+      <td>ISO 3166-2:AF</td>
+      <td>Asia</td>
+      <td>Southern Asia</td>
+      <td>NaN</td>
+      <td>142.0</td>
+      <td>34.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Åland Islands</td>
+      <td>AX</td>
+      <td>ALA</td>
+      <td>248</td>
+      <td>ISO 3166-2:AX</td>
+      <td>Europe</td>
+      <td>Northern Europe</td>
+      <td>NaN</td>
+      <td>150.0</td>
+      <td>154.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Albania</td>
+      <td>AL</td>
+      <td>ALB</td>
+      <td>8</td>
+      <td>ISO 3166-2:AL</td>
+      <td>Europe</td>
+      <td>Southern Europe</td>
+      <td>NaN</td>
+      <td>150.0</td>
+      <td>39.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Algeria</td>
+      <td>DZ</td>
+      <td>DZA</td>
+      <td>12</td>
+      <td>ISO 3166-2:DZ</td>
+      <td>Africa</td>
+      <td>Northern Africa</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>15.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>American Samoa</td>
+      <td>AS</td>
+      <td>ASM</td>
+      <td>16</td>
+      <td>ISO 3166-2:AS</td>
+      <td>Oceania</td>
+      <td>Polynesia</td>
+      <td>NaN</td>
+      <td>9.0</td>
+      <td>61.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>244</th>
+      <td>Wallis and Futuna</td>
+      <td>WF</td>
+      <td>WLF</td>
+      <td>876</td>
+      <td>ISO 3166-2:WF</td>
+      <td>Oceania</td>
+      <td>Polynesia</td>
+      <td>NaN</td>
+      <td>9.0</td>
+      <td>61.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>245</th>
+      <td>Western Sahara</td>
+      <td>EH</td>
+      <td>ESH</td>
+      <td>732</td>
+      <td>ISO 3166-2:EH</td>
+      <td>Africa</td>
+      <td>Northern Africa</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>15.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>246</th>
+      <td>Yemen</td>
+      <td>YE</td>
+      <td>YEM</td>
+      <td>887</td>
+      <td>ISO 3166-2:YE</td>
+      <td>Asia</td>
+      <td>Western Asia</td>
+      <td>NaN</td>
+      <td>142.0</td>
+      <td>145.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>247</th>
+      <td>Zambia</td>
+      <td>ZM</td>
+      <td>ZMB</td>
+      <td>894</td>
+      <td>ISO 3166-2:ZM</td>
+      <td>Africa</td>
+      <td>Sub-Saharan Africa</td>
+      <td>Eastern Africa</td>
+      <td>2.0</td>
+      <td>202.0</td>
+      <td>14.0</td>
+    </tr>
+    <tr>
+      <th>248</th>
+      <td>Zimbabwe</td>
+      <td>ZW</td>
+      <td>ZWE</td>
+      <td>716</td>
+      <td>ISO 3166-2:ZW</td>
+      <td>Africa</td>
+      <td>Sub-Saharan Africa</td>
+      <td>Eastern Africa</td>
+      <td>2.0</td>
+      <td>202.0</td>
+      <td>14.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>249 rows × 11 columns</p>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<h2 id="Break-points:-Searching-for-possibles-one-online">Break-points: Searching for possibles one online<a class="anchor-link" href="#Break-points:-Searching-for-possibles-one-online"> </a></h2><p>Now, let's check the dates to see if there are any candidate dates which we can pose as our <em>break-point</em> before analysing for a structural break. In particular, we want to see the date range so we can search the news for global shocks that would have impacted the hotel bookings industry during this period.</p>
+<p>From a cursory search on Google, nothing arose that really stood out, thus we will look within our data to see if there are any candidate break-points.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_hotel</span><span class="p">[</span><span class="s1">&#39;arrival_date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">data_hotel</span><span class="p">[</span><span class="s1">&#39;arrival_date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(Timestamp(&#39;2015-07-01 00:00:00&#39;), Timestamp(&#39;2017-08-31 00:00:00&#39;))</pre>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<h2 id="Joining:-Country-mapping-to-region">Joining: Country mapping to region<a class="anchor-link" href="#Joining:-Country-mapping-to-region"> </a></h2><p>Bring together our hotels data with the lookup data so we can bring in region information that will be able to narrow our long list of <code>country</code> into a smaller list of categories, <code>region</code>.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell tag_hide_output">
+
+<div class="cell border-box-sizing code_cell rendered tag_hide_output">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># join data to get region</span>
+<span class="n">data_join</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">left</span> <span class="o">=</span> <span class="n">data_hotel</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">data_lookup</span><span class="p">,</span>
+                    <span class="n">how</span> <span class="o">=</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">left_on</span> <span class="o">=</span> <span class="s1">&#39;country&#39;</span><span class="p">,</span> <span class="n">right_on</span> <span class="o">=</span> <span class="s1">&#39;alpha-3&#39;</span><span class="p">,</span>
+                    <span class="n">validate</span> <span class="o">=</span> <span class="s1">&#39;many_to_one&#39;</span><span class="p">)</span>
+<span class="c1"># select only useful columns</span>
+<span class="n">data_join</span> <span class="o">=</span> <span class="n">data_join</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,[</span><span class="s1">&#39;hotel&#39;</span><span class="p">,</span> <span class="s1">&#39;arrival_date&#39;</span><span class="p">,</span> <span class="s1">&#39;number_guests&#39;</span><span class="p">,</span> <span class="s1">&#39;country&#39;</span><span class="p">,</span> <span class="s1">&#39;adr&#39;</span><span class="p">,</span> 
+                             <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">,</span> <span class="s1">&#39;sub-region&#39;</span><span class="p">]]</span>
+<span class="c1"># rename columns</span>
+<span class="n">data_join</span> <span class="o">=</span> <span class="n">data_join</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;country_name&#39;</span><span class="p">,</span> <span class="s1">&#39;country&#39;</span><span class="p">:</span><span class="s1">&#39;country_code&#39;</span><span class="p">,</span> <span class="s1">&#39;sub-region&#39;</span><span class="p">:</span><span class="s1">&#39;sub_region&#39;</span><span class="p">})</span>
+<span class="n">data_join</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>hotel</th>
+      <th>arrival_date</th>
+      <th>number_guests</th>
+      <th>country_code</th>
+      <th>adr</th>
+      <th>country_name</th>
+      <th>region</th>
+      <th>sub_region</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Resort Hotel</td>
+      <td>2015-07-01</td>
+      <td>2.0</td>
+      <td>PRT</td>
+      <td>0.00</td>
+      <td>Portugal</td>
+      <td>Europe</td>
+      <td>Southern Europe</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Resort Hotel</td>
+      <td>2015-07-01</td>
+      <td>2.0</td>
+      <td>PRT</td>
+      <td>0.00</td>
+      <td>Portugal</td>
+      <td>Europe</td>
+      <td>Southern Europe</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Resort Hotel</td>
+      <td>2015-07-01</td>
+      <td>1.0</td>
+      <td>GBR</td>
+      <td>75.00</td>
+      <td>United Kingdom of Great Britain and Northern I...</td>
+      <td>Europe</td>
+      <td>Northern Europe</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Resort Hotel</td>
+      <td>2015-07-01</td>
+      <td>1.0</td>
+      <td>GBR</td>
+      <td>75.00</td>
+      <td>United Kingdom of Great Britain and Northern I...</td>
+      <td>Europe</td>
+      <td>Northern Europe</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Resort Hotel</td>
+      <td>2015-07-01</td>
+      <td>2.0</td>
+      <td>GBR</td>
+      <td>98.00</td>
+      <td>United Kingdom of Great Britain and Northern I...</td>
+      <td>Europe</td>
+      <td>Northern Europe</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>75161</th>
+      <td>City Hotel</td>
+      <td>2017-08-30</td>
+      <td>2.0</td>
+      <td>BEL</td>
+      <td>96.14</td>
+      <td>Belgium</td>
+      <td>Europe</td>
+      <td>Western Europe</td>
+    </tr>
+    <tr>
+      <th>75162</th>
+      <td>City Hotel</td>
+      <td>2017-08-31</td>
+      <td>3.0</td>
+      <td>FRA</td>
+      <td>225.43</td>
+      <td>France</td>
+      <td>Europe</td>
+      <td>Western Europe</td>
+    </tr>
+    <tr>
+      <th>75163</th>
+      <td>City Hotel</td>
+      <td>2017-08-31</td>
+      <td>2.0</td>
+      <td>DEU</td>
+      <td>157.71</td>
+      <td>Germany</td>
+      <td>Europe</td>
+      <td>Western Europe</td>
+    </tr>
+    <tr>
+      <th>75164</th>
+      <td>City Hotel</td>
+      <td>2017-08-31</td>
+      <td>2.0</td>
+      <td>GBR</td>
+      <td>104.40</td>
+      <td>United Kingdom of Great Britain and Northern I...</td>
+      <td>Europe</td>
+      <td>Northern Europe</td>
+    </tr>
+    <tr>
+      <th>75165</th>
+      <td>City Hotel</td>
+      <td>2017-08-29</td>
+      <td>2.0</td>
+      <td>DEU</td>
+      <td>151.20</td>
+      <td>Germany</td>
+      <td>Europe</td>
+      <td>Western Europe</td>
+    </tr>
+  </tbody>
+</table>
+<p>75166 rows × 8 columns</p>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<h2 id="Computing-Variables:-Proportions">Computing Variables: Proportions<a class="anchor-link" href="#Computing-Variables:-Proportions"> </a></h2><p>As we are seeking to analyse the proportion of total guests across our data, then we need to compute the proportions. This will take the following steps:</p>
+<ol>
+<li>Narrow down <code>country</code> into smaller categories to get meaningful proportions. <ul>
+<li>This will be through mapping it against <code>region</code> from a separate dataset.</li>
+</ul>
+</li>
+<li>Calculate <code>total_guests</code> by <code>arrival_date</code> and <code>region</code>.</li>
+<li>Use the <code>total_guests</code> field as our denominator to compute <code>proportion_guests</code>.</li>
+</ol>
+<p>Let's check how many subcategories we have now, so we know whether we need to further narrow this down.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_join</span><span class="p">[</span><span class="s1">&#39;region&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>array([&#39;Europe&#39;, &#39;Americas&#39;, nan, &#39;Asia&#39;, &#39;Oceania&#39;, &#39;Africa&#39;],
+      dtype=object)</pre>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The number of categories looks fine, so we can proceed with grouping by these and summarising the <code>number_guests</code> column. Then we will compute the proportion of guests per region to start getting a dataset that is suitable for <em>compositional time-series modelling</em>.</p>
+<blockquote><p>Appreciate that computing the proportions of th enumber of guests in each subregion might hide specific region-based factors that influence their ability to travel, but as this analysis is for demonstrating compositional time-series modelling, we abstract away from these concerns.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell tag_hide_output">
+
+<div class="cell border-box-sizing code_cell rendered tag_hide_output">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># group by &#39;arrival_date&#39; and &#39;region&#39; before summing &#39;number_guests&#39;</span>
+<span class="n">data_total</span> <span class="o">=</span> <span class="n">data_join</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;arrival_date&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">])[</span><span class="s1">&#39;number_guests&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">func</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sum&#39;</span><span class="p">])</span>
+<span class="c1"># rename &#39;sum&#39; column to &#39;total_guests&#39;</span>
+<span class="n">data_total</span> <span class="o">=</span> <span class="n">data_total</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sum&#39;</span><span class="p">:</span> <span class="s1">&#39;total_guests&#39;</span><span class="p">})</span>
+
+<span class="n">data_total</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>total_guests</th>
+    </tr>
+    <tr>
+      <th>arrival_date</th>
+      <th>region</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="2" valign="top">2015-07-01</th>
+      <th>Americas</th>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>Europe</th>
+      <td>181.0</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">2015-07-02</th>
+      <th>Americas</th>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Asia</th>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>Europe</th>
+      <td>67.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>2017-08-30</th>
+      <th>Europe</th>
+      <td>100.0</td>
+    </tr>
+    <tr>
+      <th rowspan="4" valign="top">2017-08-31</th>
+      <th>Africa</th>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>Americas</th>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Asia</th>
+      <td>6.0</td>
+    </tr>
+    <tr>
+      <th>Europe</th>
+      <td>169.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>2715 rows × 1 columns</p>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now that we have the total number of guests, as grouped by the <code>arrival_date</code> and <code>region</code>, we need the proportions because we want to test our compositional time-series analysis.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell tag_hide_output">
+
+<div class="cell border-box-sizing code_cell rendered tag_hide_output">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># compute proportions</span>
+<span class="c1">## where `level = 0` means grouping by first level of index, rather than by one of th columns,</span>
+<span class="c1">## so are grouping by `arrival_date` and `region`</span>
+<span class="n">data_proportion</span> <span class="o">=</span> <span class="n">data_total</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> 
+                                                           <span class="n">x</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<span class="n">data_proportion</span> <span class="o">=</span> <span class="n">data_proportion</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;total_guests&#39;</span><span class="p">:</span> <span class="s1">&#39;proportion_guests&#39;</span><span class="p">})</span>
+
+<span class="n">data_proportion</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>proportion_guests</th>
+    </tr>
+    <tr>
+      <th>arrival_date</th>
+      <th>region</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="2" valign="top">2015-07-01</th>
+      <th>Americas</th>
+      <td>0.010929</td>
+    </tr>
+    <tr>
+      <th>Europe</th>
+      <td>0.989071</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">2015-07-02</th>
+      <th>Americas</th>
+      <td>0.054795</td>
+    </tr>
+    <tr>
+      <th>Asia</th>
+      <td>0.027397</td>
+    </tr>
+    <tr>
+      <th>Europe</th>
+      <td>0.917808</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>2017-08-30</th>
+      <th>Europe</th>
+      <td>0.833333</td>
+    </tr>
+    <tr>
+      <th rowspan="4" valign="top">2017-08-31</th>
+      <th>Africa</th>
+      <td>0.011050</td>
+    </tr>
+    <tr>
+      <th>Americas</th>
+      <td>0.022099</td>
+    </tr>
+    <tr>
+      <th>Asia</th>
+      <td>0.033149</td>
+    </tr>
+    <tr>
+      <th>Europe</th>
+      <td>0.933702</td>
+    </tr>
+  </tbody>
+</table>
+<p>2715 rows × 1 columns</p>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># join totals with proportions</span>
+<span class="c1">## un-groupby so we get previous grouped index as columns</span>
+<span class="n">data_total</span> <span class="o">=</span> <span class="n">data_total</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">data_proportion</span> <span class="o">=</span> <span class="n">data_proportion</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="c1">## merge the two together</span>
+<span class="n">data_join</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">left</span> <span class="o">=</span> <span class="n">data_total</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">data_proportion</span><span class="p">,</span>
+                    <span class="n">how</span> <span class="o">=</span> <span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="n">left_on</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;arrival_date&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">),</span> <span class="n">right_on</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;arrival_date&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">),</span>
+                    <span class="n">validate</span> <span class="o">=</span> <span class="s1">&#39;one_to_one&#39;</span><span class="p">)</span>
+
+<span class="c1"># store and pass variables between notebooks</span>
+<span class="o">%</span><span class="k">store</span> data_join
+
+<span class="n">data_join</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Stored &#39;data_join&#39; (DataFrame)
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>arrival_date</th>
+      <th>region</th>
+      <th>total_guests</th>
+      <th>proportion_guests</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2015-07-01</td>
+      <td>Americas</td>
+      <td>2.0</td>
+      <td>0.010929</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2015-07-01</td>
+      <td>Europe</td>
+      <td>181.0</td>
+      <td>0.989071</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2015-07-02</td>
+      <td>Americas</td>
+      <td>4.0</td>
+      <td>0.054795</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2015-07-02</td>
+      <td>Asia</td>
+      <td>2.0</td>
+      <td>0.027397</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2015-07-02</td>
+      <td>Europe</td>
+      <td>67.0</td>
+      <td>0.917808</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>2710</th>
+      <td>2017-08-30</td>
+      <td>Europe</td>
+      <td>100.0</td>
+      <td>0.833333</td>
+    </tr>
+    <tr>
+      <th>2711</th>
+      <td>2017-08-31</td>
+      <td>Africa</td>
+      <td>2.0</td>
+      <td>0.011050</td>
+    </tr>
+    <tr>
+      <th>2712</th>
+      <td>2017-08-31</td>
+      <td>Americas</td>
+      <td>4.0</td>
+      <td>0.022099</td>
+    </tr>
+    <tr>
+      <th>2713</th>
+      <td>2017-08-31</td>
+      <td>Asia</td>
+      <td>6.0</td>
+      <td>0.033149</td>
+    </tr>
+    <tr>
+      <th>2714</th>
+      <td>2017-08-31</td>
+      <td>Europe</td>
+      <td>169.0</td>
+      <td>0.933702</td>
+    </tr>
+  </tbody>
+</table>
+<p>2715 rows × 4 columns</p>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+ 
+
+
+    </main>
+    

@@ -1,0 +1,372 @@
+---
+redirect_from:
+  - "/features/02-01-time"
+interact_link: content/features/02_01_time.ipynb
+kernel_name: python3
+kernel_path: content/features
+has_widgets: false
+title: |-
+  Time
+pagenum: 5
+prev_page:
+  url: /features/02_00_explore.html
+next_page:
+  url: /features/02_02_acfpacf.html
+suffix: .ipynb
+search: europe asia africa oceania matplotlib hotels americas plot plots guests regions hotel bookings october december clear seasonality does not below data booking trend being seem year break bokeh seaborn note com step guide python our similar levels deep troughs seasonal pattern spikes christmas period appears during though march february small june points whilst nicer visualisations using interactivity jupyter book format enable current point thus create static created helper function also includes relative positioning title box inspired documentation org tutorials text textprops html taking object orientated approach towardsdatascience creating advanced visualizations daad following layout instructions here realpython split into three overarching
+
+comment: "***PROGRAMMATICALLY GENERATED, DO NOT EDIT. SEE ORIGINAL FILES IN /content***"
+---
+
+    <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">Time</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Whilst it would be nicer to plot the visualisations using <code>bokeh</code> as there is interactivity, the Jupyter Book format does not enable the use of <code>bokeh</code> at this current point in time, thus we will use <code>matplotlib</code> and <code>seaborn</code> to create static plots.</p>
+<p>Note, we have created a helper function which also includes relative-positioning of the 'title-box'. This was inspired by the <code>matplotlib</code> <a href="https://matplotlib.org/3.1.1/tutorials/text/text_props.html">documentation</a>.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell tag_hide_input">
+
+<div class="cell border-box-sizing code_cell rendered tag_hide_input">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">seaborn</span>
+
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="c1"># create helper function that places text box inside a plot</span>
+<span class="c1">## so acts like an &#39;in-plot title&#39;</span>
+<span class="k">def</span> <span class="nf">add_titlebox</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+    <span class="c1"># build a rectangle in axes coordinates - should parameterise these as arguments</span>
+    <span class="n">left</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="o">.</span><span class="mi">25</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span>
+    <span class="n">bottom</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="o">.</span><span class="mi">25</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span>
+    <span class="n">right</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="n">width</span>
+    <span class="n">top</span> <span class="o">=</span> <span class="n">bottom</span> <span class="o">+</span> <span class="n">height</span>
+    
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">right</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">top</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">text</span><span class="p">,</span>
+            <span class="n">horizontalalignment</span> <span class="o">=</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">verticalalignment</span> <span class="o">=</span> <span class="s1">&#39;top&#39;</span><span class="p">,</span>
+            <span class="n">transform</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+            <span class="n">bbox</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">facecolor</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">),</span>
+            <span class="n">fontsize</span> <span class="o">=</span> <span class="mf">12.5</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell tag_hide_output">
+
+<div class="cell border-box-sizing code_cell rendered tag_hide_output">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># pass in variable from other notebook</span>
+<span class="o">%</span><span class="k">store</span> -r data_join
+
+<span class="c1"># wrangle</span>
+<span class="c1">## set `region` to be categorical</span>
+<span class="n">data_join</span><span class="p">[</span><span class="s1">&#39;region&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_join</span><span class="p">[</span><span class="s1">&#39;region&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+
+<span class="c1"># check column data types</span>
+<span class="n">data_join</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+<span class="c1"># check all unique values in `region`</span>
+<span class="n">data_join</span><span class="p">[</span><span class="s1">&#39;region&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+Int64Index: 2715 entries, 0 to 2714
+Data columns (total 4 columns):
+ #   Column             Non-Null Count  Dtype         
+---  ------             --------------  -----         
+ 0   arrival_date       2715 non-null   datetime64[ns]
+ 1   region             2715 non-null   category      
+ 2   total_guests       2715 non-null   float64       
+ 3   proportion_guests  2715 non-null   float64       
+dtypes: category(1), datetime64[ns](1), float64(2)
+memory usage: 87.7 KB
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[Americas, Europe, Asia, Oceania, Africa]
+Categories (5, object): [Americas, Europe, Asia, Oceania, Africa]</pre>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Below, we plot the data now taking an <a href="https://towardsdatascience.com/a-step-by-step-guide-for-creating-advanced-python-data-visualizations-with-seaborn-matplotlib-1579d6a1a7d0">object-orientated approach</a> by following the layout instructions <a href="https://realpython.com/python-matplotlib-guide/">here</a>.</p>
+<p>Note, we have split our data out into three overarching groups by region:</p>
+<ol>
+<li><strong>Europe</strong> - this has the highest proportion of guests booking hotels</li>
+<li><strong>Asia</strong> and <strong>Americas</strong> - these <code>regions</code> have similar levels of guests booking hotels</li>
+<li><strong>Africa</strong> and <strong>Oceania</strong> - these <code>regions</code> have similar levels of guests booking hotels</li>
+</ol>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>From the time-plot below, we see that:</p>
+<ul>
+<li><p><strong>Europe</strong>: The <strong>trend</strong> for hotel bookings is slightly falling over time with deep troughs being reached in October 2015 and December 2016. There does not seem to be clear suggestions of <strong>seasonality</strong> as noted by the absence of a seasonal pattern that is frequent year on year.</p>
+</li>
+<li><p><strong>Asia and Americas</strong>: Like <em>Europe</em>, there does not seem to be a clear <strong>trend</strong>. However, spikes in hotel bookings to these regions occur on November 2015 for <em>Asia</em> and December 2016 for the <em>Americas</em>. Interestingly, these deep troughs seem to coincide with peaks being seen in hotel bookings in <em>Europe</em>. For <strong>seasonality</strong>, there is a peak for each December in hotel bookings to the <em>Americas</em>, with this probably being explained by the Christmas period. As for <em>Asia</em>, there appears to be no clear seasonal pattern, even during Chinese New Year!</p>
+</li>
+<li><p><strong>Africa and Oceania</strong>: Again, no clear <strong>trend</strong> though there are spikes in March 2016 and February 2017 for <em>Africa</em>. For <em>Oceania</em>, there is a small spike in May 2016 and a larger one in June 2017. There appears to be no <strong>seasonality</strong> noticeable from the plot, though it may hide weekly <strong>seasonality</strong>.</p>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># take object-orientated approach to plotting</span>
+
+<span class="c1">## set plotting grid</span>
+<span class="n">gridsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot2grid</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="n">gridsize</span><span class="p">,</span> <span class="n">loc</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">colspan</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">rowspan</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot2grid</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="n">gridsize</span><span class="p">,</span> <span class="n">loc</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">ax3</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot2grid</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="n">gridsize</span><span class="p">,</span> <span class="n">loc</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c1">## create plots and populate grid</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Time-plot: </span><span class="se">\n</span><span class="s1">Total guests staying in hotels by region&#39;</span><span class="p">,</span>
+              <span class="n">fontdict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;fontsize&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">})</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;arrival_date&#39;</span><span class="p">,</span> <span class="s1">&#39;total_guests&#39;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">data_join</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;region == &quot;Europe&quot;&#39;</span><span class="p">))</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span> <span class="o">=</span> <span class="s1">&#39;Total guests&#39;</span><span class="p">)</span>
+<span class="n">add_titlebox</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax1</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Europe&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;arrival_date&#39;</span><span class="p">,</span> <span class="s1">&#39;total_guests&#39;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">data_join</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;region == &quot;Asia&quot;&#39;</span><span class="p">))</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;arrival_date&#39;</span><span class="p">,</span> <span class="s1">&#39;total_guests&#39;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">data_join</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;region == &quot;Americas&quot;&#39;</span><span class="p">))</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span> <span class="o">=</span> <span class="s1">&#39;Total guests&#39;</span><span class="p">)</span>
+<span class="n">add_titlebox</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax2</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Asia and the Americas&#39;</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;arrival_date&#39;</span><span class="p">,</span> <span class="s1">&#39;total_guests&#39;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">data_join</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;region == &quot;Africa&quot;&#39;</span><span class="p">))</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;arrival_date&#39;</span><span class="p">,</span> <span class="s1">&#39;total_guests&#39;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">data_join</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;region == &quot;Oceania&quot;&#39;</span><span class="p">))</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span> <span class="o">=</span> <span class="s1">&#39;Total guests&#39;</span><span class="p">)</span>
+<span class="n">add_titlebox</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax3</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Africa and Oceania&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x12daded60&gt;</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/features/02_01_time_5_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <em>Asia</em>, <em>Americas</em>, <em>Africa</em> and <em>Oceania</em> plots above are quite small in comparison to the <em>Europe</em> one. If you wish to explore them in further detail, you can click the <em>'+'</em> icon below to reveal the plots and code that generates them.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell tag_hide_input tag_hide_output">
+
+<div class="cell border-box-sizing code_cell rendered tag_hide_input tag_hide_output">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># focus on Asia, Americas, Africa and Oceania more</span>
+<span class="n">data_asiaamericas</span> <span class="o">=</span> <span class="n">data_join</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;region in (&quot;Asia&quot;, &quot;Americas&quot;)&#39;</span><span class="p">)</span>
+<span class="n">data_asiaamericas</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span> <span class="o">=</span> <span class="s1">&#39;arrival_date&#39;</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="s1">&#39;region&#39;</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="s1">&#39;total_guests&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
+<span class="n">data_africaoceania</span> <span class="o">=</span> <span class="n">data_join</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;region in (&quot;Africa&quot;, &quot;Oceania&quot;)&#39;</span><span class="p">)</span>
+<span class="n">data_africaoceania</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span> <span class="o">=</span> <span class="s1">&#39;arrival_date&#39;</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="s1">&#39;region&#39;</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="s1">&#39;total_guests&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x10fe6caf0&gt;</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/features/02_01_time_7_1.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../images/features/02_01_time_7_2.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<h2 id="Summary:-Break-points">Summary: Break-points<a class="anchor-link" href="#Summary:-Break-points"> </a></h2><p>Therefore, from visually-inspecting the time-plots, our candidate break-points to test for a <strong>structural break</strong> are:</p>
+<ul>
+<li>Europe: October 2015.</li>
+<li>Asia: October 2015 and to a lesser extent, May 2017.</li>
+<li>America: December 2016 - possibly a bumper Christmas period where people booked hotels during this time.</li>
+<li>Africa: October 2015, March 2016, February 2017 and July 2017.</li>
+<li>Oceania: April 2016 if concerned but June 2017 more likely.</li>
+</ul>
+<blockquote><p>Since the number of guests staying in hotels within <em>Africa</em> and <em>Oceania</em> in this dataset are so low, we will ignore these regions in the analysis.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell tag_hide_input tag_hide_output">
+
+<div class="cell border-box-sizing code_cell rendered tag_hide_input tag_hide_output">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">store</span> data_join
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Stored &#39;data_join&#39; (DataFrame)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+ 
+
+
+    </main>
+    
