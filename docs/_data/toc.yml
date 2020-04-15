@@ -51,6 +51,9 @@
   - title: Data Wrangling
     url: /features/01_01_datawrangle
     not_numbered: true
+  - title: Data Computation
+    url: /features/01_02_datatransform
+    not_numbered: true
 - title: Exploratory Data Analysis
   url: /features/02_00_explore
   not_numbered: true
